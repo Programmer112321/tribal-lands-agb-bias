@@ -1,0 +1,14 @@
+output/
+*.tif
+*.gpkg
+*.shp
+*.dbf
+*.shx
+*.prj
+*.cpg
+*.rds
+*.RData
+*.pkl
+.Rhistory
+.Rproj.user/
+__pycache__/

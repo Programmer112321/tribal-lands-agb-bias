@@ -1,0 +1,40 @@
+# Paths used by every script. Edit input_dir (and, if needed, single entries) for your machine.
+# Relative input paths are read under input_dir; absolute paths are used as given.
+# output_dir is relative to the repository root unless absolute.
+
+input_dir: "D:/cdj/chapter1_2_3/input"
+output_dir: "output"
+
+inputs:
+  # FIA database, SQLite, FIADB v9.3 (whole U.S.; https://research.fs.usda.gov/products/dataandtools/fia-datamart)
+  fiadb: "FIA_ENTIRE_2025/SQLite_FIADB_ENTIRE.db"
+  # FIA 64,000-ha hexagon grid (Menlove & Healey, 2020); only the FID and geometry are used
+  fia_hexagons: "boundary/FIA_polygon/ref_AGB_FIA_hex.shp"
+  # U.S. Census Bureau 2024 TIGER/Line American Indian/Alaska Native/Native Hawaiian Areas
+  tribal_lands: "boundary/tribe_boundary/tl_2024_us_aiannh.shp"
+  # USDA Forest Service ECOMAP ecological provinces (2007)
+  eco_provinces: "boundary/USFS_ecological_subregions_2007/province2007.shp"
+  # NLCD Tree Canopy Cover v2025-6, CONUS, WGS84
+  nlcd_tcc_2021: "stand_structure/treecover_NLCD/nlcd_tcc_conus_wgs84_v2025-6_20210101_20211231.tif"
+  nlcd_tcc_2020: "stand_structure/treecover_NLCD/nlcd_tcc_conus_wgs84_v2025-6_20200101_20201231.tif"
+  # GEDI L4B gridded AGB v2.1, 1 km: mean (MU) and standard error (SE), 18 Apr 2019 - 16 Mar 2023
+  gedi_l4b_mu: "AGB/GEDI_L4B_Gridded_Biomass_V2/GEDI04_B_MW019MW223_02_002_02_R01000M_MU.tif"
+  gedi_l4b_se: "AGB/GEDI_L4B_Gridded_Biomass_V2/GEDI04_B_MW019MW223_02_002_02_R01000M_SE.tif"
+  # ESA CCI Biomass v6.0, 100 m (layers agb, agb_sd); 2020 = main analysis, 2021 = period sensitivity
+  cci_2020: "AGB/ESA_CCI/ESACCI-BIOMASS-L4-AGB-MERGED-100m-2020-fv6.0.nc"
+  cci_2021: "AGB/ESA_CCI/ESACCI-BIOMASS-L4-AGB-MERGED-100m-2021-fv6.0.nc"
+
+settings:
+  seed: 42
+  conus_bbox: [-125, -66, 24, 50]          # lon_min, lon_max, lat_min, lat_max for FIA plots
+  conus_extent: [-125, -66.5, 24, 49]      # extent used to crop the tribal-land boundaries
+  min_tribal_land_area_m2: 1.0e8           # tribal lands larger than 100 km² (TIGER/Line ALAND)
+  selection_plot_years: [2019, 2023]       # forested FIA plots counted for the hexagon selection
+  min_plots: 4                             # at least four forested FIA plots per hexagon
+  min_overlap_fraction: 0.1666667          # overlap > 1/6 of the largest hexagon-tribal-land piece (~108 km²)
+  min_forest_area_m2: 90000                # >= 9 ha NLCD 2021 forest in the piece (never binds; kept as a safety filter)
+  min_hexagons_per_tribal_land: 6
+  reference_years: [2018, 2022]            # FIA plots used for the reference AGB (main analysis)
+  forest_canopy_threshold: 10              # forest = canopy cover > 10% (NLCD cells and FIA conditions)
+  canopy_group_gap: 3                      # FIA canopy-cover values closer than 3 points share an interval
+  workers: 16                              # parallel workers for the per-piece raster work
