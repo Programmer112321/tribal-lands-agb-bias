@@ -1,7 +1,7 @@
 # Local-scale bias in global forest aboveground biomass products on Tribal lands
 
 Code for: Chu, D., et al. *Local-scale bias in global products of forest aboveground biomass related to
-stand density and structural diversity.* Remote Sensing of Environment (under review, RSE-D-26-03577).
+structural diversity and stand density.* Remote Sensing of Environment (under review, RSE-D-26-03577).
 
 The analysis compares two global aboveground biomass (AGB) products, GEDI L4B v2.1 (1 km) and ESA CCI Biomass
 v6.0 (2020, 100 m), with a reference AGB built from USDA Forest Service Forest Inventory and Analysis (FIA)
@@ -10,6 +10,11 @@ ten forest and site factors (XGBoost + SHAP) and tests bias-correction models.
 
 > **Status:** under construction. Stages are added one at a time; each is checked against the results
 > reported in the paper before the next one is added.
+>
+> **Not yet updated:** `02_reference/02_products_and_reference.R` still uses the reference rule of an earlier
+> draft (hexagon pieces without FIA plots count as 0, and pieces are weighted equally). The revised manuscript
+> uses the pixel-weighted mean over the pieces that contain forested FIA plots. Do not use the stage-02 output
+> until this is changed.
 
 ## Layout and run order
 
