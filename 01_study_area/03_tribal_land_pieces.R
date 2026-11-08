@@ -10,6 +10,7 @@
 source("R/setup.R")
 
 e <- SET$conus_extent
+stopifnot(is.numeric(SET$min_tribal_land_area_m2))   # a string here would turn the filter into a text comparison
 tribal <- vect(inp("tribal_lands"))
 tribal <- crop(project(tribal, "EPSG:4326"), ext(e[1], e[2], e[3], e[4]))
 tribal <- tribal[tribal$ALAND > SET$min_tribal_land_area_m2, c("NAME", "GEOID")]
