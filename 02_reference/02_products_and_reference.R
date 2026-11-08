@@ -7,11 +7,15 @@
 #                 fraction of it inside the piece; pieces of a hexagon are combined with the same weights;
 #   reference     every 30-m NLCD pixel inside the retained cells gets the FIA AGB of its canopy-cover interval
 #                 (script 01); pixels with canopy cover <= 10% get 0. The piece reference is the mean over these
-#                 pixels, and the hexagon reference is the mean of its pieces.
+#                 pixels. The hexagon reference is the mean over all such pixels in the pieces that hold forested
+#                 FIA plots (= piece references weighted by their pixel counts). Pieces without plots have no
+#                 canopy-cover intervals and are left out.
 #
 # Usage: Rscript 02_reference/02_products_and_reference.R [first_year last_year cci_year]   (default 2018 2022 2020)
 # Output: output/02_reference/products_reference_<years>_cci<year>.csv
-#   FID, product, sat (Mg/ha), unc (GEDI: standard error; CCI: standard deviation), ref (Mg/ha), n_cells
+#   FID, product, sat (Mg/ha), unc (GEDI: standard error; CCI: standard deviation), n_cells (retained product cells,
+#   coverage-weighted), ref (Mg/ha), n_pieces (pieces with FIA plots used for ref)
+#   Also: reference_pieces_<years>_cci<year>.csv (reference, pixel count and has_fia_plots per piece)
 suppressPackageStartupMessages({ library(sf); library(exactextractr); library(future.apply) })
 source("R/setup.R")
 
@@ -72,9 +76,10 @@ sat <- sat[, .(sat = sum(agb_w) / sum(w), unc = sum(unc_w) / sum(w), n_cells = s
 iv  <- fread(out("02_reference", paste0("canopy_intervals_", tag, ".csv")))
 ref <- iv[pix, on = .(FIDP, lower <= tcc, upper >= tcc), .(FIDP = i.FIDP, product = i.product, n = i.n, BIO_Mg_ha = x.BIO_Mg_ha)]
 ref <- ref[, .(ref = sum(n * fifelse(is.na(BIO_Mg_ha), 0, BIO_Mg_ha)) / sum(n), n_pixels = sum(n)), by = .(FIDP, product)]
-ref[, has_fia_plots := FIDP %in% iv$FIDP]     # pieces without FIA plots have no intervals, so their reference is 0
+ref[, has_fia_plots := FIDP %in% iv$FIDP]     # pieces without FIA plots have no intervals (ref above = 0)
 fwrite(ref, out("02_reference", sprintf("reference_pieces_%s_cci%s.csv", tag, cci_year)))
-ref <- ref[, .(ref = mean(ref)), by = .(FID = fid_of(FIDP), product)]
+ref <- ref[has_fia_plots == TRUE, .(ref = sum(ref * n_pixels) / sum(n_pixels), n_pieces = .N),
+           by = .(FID = fid_of(FIDP), product)]
 
 res <- merge(sat, ref, by = c("FID", "product"), all = TRUE)
 res[n_cells == 0, `:=`(sat = NA, unc = NA, ref = NA)]                  # no retained cell: hexagon dropped
