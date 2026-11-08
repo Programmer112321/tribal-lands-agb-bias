@@ -98,20 +98,41 @@ random seed 42). Set `input_dir` to the folder that holds the raw data. Paths in
 Python scripts read the same file (`py/common.py`), which also fixes the predictor order and the XGBoost search
 space.
 
+## Building the soil-moisture input
+
+Every input except soil moisture is used as downloaded. The soil-moisture layer (`inputs: smap_sm_2021`) is a
+2021 annual mean that has to be built from the daily SMAP files:
+
+1. Download the daily granules of SMAP Enhanced L3 Radiometer Global Daily 9 km EASE-Grid Soil Moisture,
+   Version 6 (SPL3SMP_E; https://doi.org/10.5067/M20OXIZHY3RJ; NASA Earthdata login required) for
+   1 January to 31 December 2021.
+2. From each granule, read the surface (0–5 cm) volumetric soil moisture of the AM and PM overpasses
+   (`Soil_Moisture_Retrieval_Data_AM/soil_moisture` and `Soil_Moisture_Retrieval_Data_PM/soil_moisture_pm`;
+   −9999 = no retrieval).
+3. Average all valid 2021 values in each 9 km cell. The result is one global layer on the EASE-Grid 2.0 global
+   grid (EPSG:6933), in m³ m⁻³.
+4. Project it to longitude/latitude (EPSG:4326; `terra::project`, bilinear), crop it to the conterminous
+   United States (longitude −125 to −66.5, latitude 24 to 49), and save it as GeoTIFF under the path given for
+   `smap_sm_2021` in `config.yml`.
+
+Stage 03 then averages the layer over each hexagon. Steps 2–3 are a reasonable default, not a record of what
+the paper did (see Reproducibility notes).
+
 ## Reproducibility notes
 
 - **Checked against the paper.** Every stage was run from the raw inputs and compared with the published
   results. Stages 01–03 reproduce the published analysis tables (study area, reference and satellite AGB, study
-  regions, nine of the ten predictors) to floating-point precision. On those tables, stages 04–06 reproduce the
-  published bias, regional and global models (CV scores, SHAP values, out-of-fold predictions), the inventory-period
-  runs, Tables S1–S2, the values behind Figs. 5 and S5, and the figures.
-- **Soil moisture.** The SMAP 2021 mean raster used in the paper was not kept. The file named in `config.yml`
-  (`smap_sm_2021`) was built from the same product and agrees closely with the published hexagon values
-  (r = 0.995, largest difference 0.04 m³ m⁻³), but not exactly. A full rerun from this raster therefore moves a
-  few published numbers slightly (for example, the CCI bias model's elevation importance is 4.9 instead of
-  5.2 Mg ha⁻¹, and the NM+SECP CCI regional model's CV R² is −0.23 instead of −0.26). To use hexagon values
-  instead of the raster, set `settings: soil_moisture_table` to a CSV with columns `FID` and `soil_moisture`;
-  with the published hexagon values, the rerun reproduces every published number.
+  regions, the sensitivity layers, and nine of the ten predictors) to floating-point precision; soil moisture
+  is the exception (next note). On the published analysis tables, stages 04–06 reproduce the published bias,
+  regional and global models (CV scores, SHAP values, out-of-fold predictions), the inventory-period runs,
+  Tables S1–S2, the values behind Figs. 5 and S5, the numbers quoted in the text, and the figures. Exact
+  agreement assumes the package versions listed under Software.
+- **Soil moisture.** The SMAP 2021 mean raster used in the paper was not kept, and how the daily values were
+  averaged (which overpasses, any quality screening) was not recorded, so a rebuilt raster (see "Building the
+  soil-moisture input") will not match it exactly. The rebuild used to test this code agrees closely with the
+  published hexagon values (r = 0.995, largest difference 0.04 m³ m⁻³); with it, a full rerun moves a few
+  published numbers slightly (for example, the CCI bias model's elevation importance is 4.9 instead of
+  5.2 Mg ha⁻¹, and the NM+SECP CCI regional model's CV R² is −0.23 instead of −0.26).
 - **Terrain.** Slope and aspect are computed tile by tile (1° ASTER GDEM tiles). A hexagon that crosses a tile
   edge takes the plain mean of the means of its parts in each tile.
 - **Which part of the hexagon.** Forest age (TreeMap) and the GLAD canopy height use the part of the hexagon
@@ -139,7 +160,7 @@ All inputs are public. They are not included in this repository because of their
 | GEDI L4C gridded WSCI (1 km) | ORNL DAAC |
 | Community wood density map | Mo et al. (2024) |
 | gNATSGO available water capacity | USDA NRCS |
-| SMAP enhanced L3 soil moisture (SPL3SMP_E), 2021 annual mean | NASA NSIDC DAAC |
+| SMAP enhanced L3 soil moisture (SPL3SMP_E v6, daily 2021; see "Building the soil-moisture input") | NASA NSIDC DAAC |
 | Forest stand age 2011 (sensitivity) | Pan et al. (2011), USDA Forest Service Research Data Archive |
 | GLAD forest canopy height 2019 (sensitivity) | Potapov et al. (2021) |
 | GAMI forest age v2.1 (sensitivity) | Besnard et al. (2024), GFZ Data Services |

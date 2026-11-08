@@ -38,8 +38,8 @@ inputs:
   gedi_l4c_wsci: "stand_structure/GEDI_L4C_WSCI_Gridded_2470/GEDI_L4C_WSCI_gridded_1km_20190418_20230317_V2.tif"
   # gNATSGO available water capacity (mm/m), CONUS
   gnatsgo_awc: "soil/awc_gNATSGO/awc_gNATSGO_US.tif"
-  # SMAP enhanced L3 soil moisture (SPL3SMP_E), 2021 annual mean, CONUS lon/lat grid. The raster used in the
-  # paper was not kept; this one is a rebuild (see README, Reproducibility notes, and settings: soil_moisture_table)
+  # SMAP enhanced L3 soil moisture (SPL3SMP_E v6), 2021 annual mean, CONUS lon/lat grid. Built from the daily
+  # files, not downloaded as is: see README, "Building the soil-moisture input"
   smap_sm_2021: "../input_ok/SMAP_SM_2021mean.tif"
   # Pan et al. (2011) forest stand age, 2011, 250 m (sensitivity: forest age not from TreeMap)
   pan_forest_age_2011: "stand_structure/forest_age_usda/conus_age11_250m.img"
@@ -66,8 +66,6 @@ settings:
   workers: 16                              # parallel workers for the per-piece raster work
   treemap_age_year: 2020                   # TreeMap stand age is moved from the plot visit to this year
   glad_tree_height: [5, 60]                # GLAD canopy height: tree pixels are 5-60 m
-  soil_moisture_table: ""                  # optional CSV (FID, soil_moisture), path relative to the repository root;
-                                           # if set, used instead of the smap_sm_2021 raster
   # Study regions: lon/lat boxes [lon_min, lon_max, lat_min, lat_max]. A hexagon belongs to the box that
   # holds its centroid; a hexagon outside every box takes the region of the other hexagons of its tribal land.
   regions:

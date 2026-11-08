@@ -6,7 +6,7 @@
 #   Wood density (+ SD)    community wood density (g/cm³); SD = standard deviation over the hexagon
 #   Structural diversity   GEDI L4C mean WSCI estimate
 #   AWC                    gNATSGO available water capacity (mm/m)
-#   Soil moisture          SMAP 2021 mean soil moisture (m³/m³), or hexagon values from settings: soil_moisture_table
+#   Soil moisture          SMAP 2021 mean soil moisture (m³/m³)
 #   Pan forest age (+ SD)  Pan et al. (2011) stand age, used only in the forest-age comparison
 # Layers not built from FIA plots (sensitivity analysis, Table S1):
 #   GLAD canopy height 2019  mean over tree pixels (5-60 m) of the hexagon part inside tribal lands
@@ -34,17 +34,6 @@ zmean <- function(r, poly = hex, fun = "mean") {
 }
 col <- function(d, name) setnames(d, "v", name)[]
 
-# Soil moisture: hexagon means of the SMAP raster, or, if settings: soil_moisture_table is set, the hexagon
-# values in that table (columns FID, soil_moisture; path relative to the repository root)
-soil_moisture <- function() {
-  f <- SET$soil_moisture_table
-  if (is.null(f) || !nzchar(f)) return(col(zmean(rast(inp("smap_sm_2021"))), "Soil moisture"))
-  t <- fread(if (is_abs(f)) f else file.path(ROOT, f))[FID %in% fids, .(FID, `Soil moisture` = soil_moisture)]
-  stopifnot(setequal(t$FID, fids))
-  msg("soil moisture from", f)
-  t
-}
-
 res <- list(
   col(zmean(rast(inp("treemap_standht")))[, v := 0.3048 * v], "Canopy height"),       # feet -> m
   col(zmean(rast(inp("treemap_sdi"))), "Stand density"),
@@ -52,7 +41,7 @@ res <- list(
   col(zmean(rast(inp("wood_density")), fun = "sd"), "Wood density SD"),
   col(zmean(rast(inp("gedi_l4c_wsci"))[[1]]), "Structural diversity"),
   col(zmean(rast(inp("gnatsgo_awc"))), "AWC"),
-  soil_moisture(),
+  col(zmean(rast(inp("smap_sm_2021"))), "Soil moisture"),
   col(zmean(rast(inp("pan_forest_age_2011"))), "Pan forest age"),
   col(zmean(rast(inp("pan_forest_age_2011")), fun = "sd"), "Pan forest age SD"))
 msg("FIA-based and abiotic layers done")
