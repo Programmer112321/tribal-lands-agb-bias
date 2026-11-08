@@ -24,11 +24,37 @@ inputs:
   cci_2020: "AGB/ESA_CCI/ESACCI-BIOMASS-L4-AGB-MERGED-100m-2020-fv6.0.nc"
   cci_2021: "AGB/ESA_CCI/ESACCI-BIOMASS-L4-AGB-MERGED-100m-2021-fv6.0.nc"
 
+  # --- predictors (stage 03) ---
+  # ASTER GDEM v3 1-degree tiles (ASTGTMV003_<tile>_dem.tif): elevation, slope, northness
+  aster_gdem_dir: "terrain/dem_usa"
+  # TreeMap 2020 (Houtman et al., 2025; RDS-2025-0031): imputed FIA plot raster (with attribute table),
+  # stand height (feet) and stand density index
+  treemap_2020: "AGB/tree_map/TreeMap2020_CONUS.tif"
+  treemap_standht: "stand_structure/forest_height_USDA/TreeMap2020_CONUS_STANDHT.tif"
+  treemap_sdi: "stand_structure/SDI_USDA/TreeMap2020_CONUS_SDIsum.tif"
+  # Community wood density map (Mo et al., 2024)
+  wood_density: "stand_structure/Community_Wood_Density_Map_Merged.tif"
+  # GEDI L4C gridded Waveform Structural Complexity Index, 1 km (layer 1 = mean WSCI estimate)
+  gedi_l4c_wsci: "stand_structure/GEDI_L4C_WSCI_Gridded_2470/GEDI_L4C_WSCI_gridded_1km_20190418_20230317_V2.tif"
+  # gNATSGO available water capacity (mm/m), CONUS
+  gnatsgo_awc: "soil/awc_gNATSGO/awc_gNATSGO_US.tif"
+  # SMAP enhanced L3 soil moisture (SPL3SMP_E), 2021 annual mean, CONUS lon/lat grid. The raster used in the
+  # paper was not kept; this one is a rebuild (see README, Reproducibility notes, and settings: soil_moisture_table)
+  smap_sm_2021: "../input_ok/SMAP_SM_2021mean.tif"
+  # Pan et al. (2011) forest stand age, 2011, 250 m (sensitivity: forest age not from TreeMap)
+  pan_forest_age_2011: "stand_structure/forest_age_usda/conus_age11_250m.img"
+  # layers not built from FIA plots (sensitivity, Table S1)
+  glad_canopy_height_2019: "stand_structure/forest_height_2019/Forest_height_2019_NAM.tif"
+  gami_forest_age: "stand_structure/forest_age_global/Forest_age.nc"
+  crowther_tree_density: "stand_structure/tree_density_Crowther2015/Crowther_Nature_Files_Revision_01_WGS84_GeoTiff/Crowther_Nature_Biome_Revision_01_WGS84_GeoTiff.tif"
+  # Hansen Global Forest Change v1.12 loss year, 10-degree tiles (forest loss 2019-2023, Section 2.3)
+  hansen_lossyear_dir: "LULCC/lossyearglobal_title"
+
 settings:
   seed: 42
   conus_bbox: [-125, -66, 24, 50]          # lon_min, lon_max, lat_min, lat_max for FIA plots
   conus_extent: [-125, -66.5, 24, 49]      # extent used to crop the tribal-land boundaries
-  min_tribal_land_area_m2: 1.0e8           # tribal lands larger than 100 km² (TIGER/Line ALAND)
+  min_tribal_land_area_m2: 100000000       # tribal lands larger than 100 km² (TIGER/Line ALAND); write digits, YAML reads 1.0e8 as text
   selection_plot_years: [2019, 2023]       # forested FIA plots counted for the hexagon selection
   min_plots: 4                             # at least four forested FIA plots per hexagon
   min_overlap_fraction: 0.1666667          # overlap > 1/6 of the largest hexagon-tribal-land piece (~108 km²)
@@ -38,3 +64,17 @@ settings:
   forest_canopy_threshold: 10              # forest = canopy cover > 10% (NLCD cells and FIA conditions)
   canopy_group_gap: 3                      # FIA canopy-cover values closer than 3 points share an interval
   workers: 16                              # parallel workers for the per-piece raster work
+  treemap_age_year: 2020                   # TreeMap stand age is moved from the plot visit to this year
+  glad_tree_height: [5, 60]                # GLAD canopy height: tree pixels are 5-60 m
+  soil_moisture_table: ""                  # optional CSV (FID, soil_moisture), path relative to the repository root;
+                                           # if set, used instead of the smap_sm_2021 raster
+  # Study regions: lon/lat boxes [lon_min, lon_max, lat_min, lat_max]. A hexagon belongs to the box that
+  # holds its centroid; a hexagon outside every box takes the region of the other hexagons of its tribal land.
+  regions:
+    PNW:  [-122, -118, 44.5, 48.5]         # Pacific Northwest
+    SW:   [-113, -106, 32.5, 41]           # Southwest / Four Corners
+    SGP:  [-100, -94, 33.5, 37.1]          # Southern Great Plains
+    NM:   [-97, -93, 46.5, 48.5]           # Northern Minnesota
+    SECP: [-86.5, -78.1, 30.8, 35.2]       # Southeastern Coastal Plain
+  # regions merged for the regional models (the two small regions join the most similar large one)
+  merged_regions: {SGP: SGP, SW: SW, PNW: SW, NM: NM, SECP: NM}

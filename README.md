@@ -8,13 +8,10 @@ v6.0 (2020, 100 m), with a reference AGB built from USDA Forest Service Forest I
 plots in 257 FIA hexagons on 20 Tribal lands in the conterminous United States. It then explains the bias with
 ten forest and site factors (XGBoost + SHAP) and tests bias-correction models.
 
-> **Status:** under construction. Stages are added one at a time; each is checked against the results
-> reported in the paper before the next one is added.
-
-
 ## Layout and run order
 
-Run every script from the repository root, in numeric order. R scripts: `Rscript <folder>/<script>.R`.
+Run every script from the repository root, in the order listed. R scripts: `Rscript <folder>/<script>.R`;
+Python scripts: `python <folder>/<script>.py`. Outputs go to `output/<stage>/` (not tracked by git).
 
 | Stage | Script | What it does | Paper |
 |---|---|---|---|
@@ -24,17 +21,105 @@ Run every script from the repository root, in numeric order. R scripts: `Rscript
 | | `01_study_area/04_select_hexagons.R` | Study hexagons (259 on 20 Tribal lands) | 2.1 |
 | 02 reference | `02_reference/01_fia_canopy_intervals.R` | FIA plot AGB by canopy cover; canopy-cover intervals per hexagon piece | 2.3 |
 | | `02_reference/02_products_and_reference.R` | Forest mask; satellite AGB and product-matched reference per hexagon | 2.1, 2.3 |
-| 03 predictors | *to be added* | | |
-| 04 models | *to be added* | | |
-| 05 sensitivity | *to be added* | | |
-| 06 figures and tables | *to be added* | | |
+| | `02_reference/03_forest_area_reference.R` | Product-independent reference (map in Fig. 1) | Fig. 1 |
+| 03 predictors | `03_predictors/01_terrain.R` | Elevation, slope, northness (ASTER GDEM) | 2.4 |
+| | `03_predictors/02_raster_predictors.R` | Canopy height, stand density, wood density, structural diversity, AWC, soil moisture; layers for the sensitivity analyses | 2.4 |
+| | `03_predictors/03_treemap_stand_age.R` | Forest age from TreeMap 2020 | 2.4 |
+| | `03_predictors/04_analysis_tables.R` | Analysis tables (bias, reference, predictors) and study regions | 2.1, 2.5 |
+| 04 models | `04_models/01_bias_model.py` | Bias model (XGBoost), out-of-fold SHAP, response curves | 2.5.1, 3.2 |
+| | `04_models/02_regional_correction.py` | Regional correction models | 2.5.2, 3.4 |
+| | `04_models/03_global_correction.py` | Global correction model | 2.5.2, 3.4 |
+| 05 sensitivity | `05_sensitivity/01_forest_loss.R` | Forest loss 2019–2023 per hexagon | 2.3 |
+| | `05_sensitivity/02_scale.py` | Accuracy at hexagon, tribal-land and well-sampled level | Table S2 |
+| | `05_sensitivity/03_period_summary.py` | FIA 2019–2023 / CCI 2021 runs compared with the main run | 2.3, 3.2 |
+| 06 figures, tables | `06_figures_tables/fig1_study_area.R` | Fig. 1 | |
+| | `06_figures_tables/fig2_accuracy_and_bias.R` | Fig. 2, Fig. S2 | |
+| | `06_figures_tables/fig3_shap_and_response.R` | Fig. 3 | |
+| | `06_figures_tables/figS3_response_curves.py` | Fig. S3 | |
+| | `06_figures_tables/fig4_dominant_factor.R` | Fig. 4, Fig. S4 | |
+| | `06_figures_tables/fig5_correction_performance.py` | Fig. 5, Fig. S5 | |
+| | `06_figures_tables/figS1_tribal_land_accuracy.R` | Fig. S1 | |
+| | `06_figures_tables/table_S1.py` | Table S1 | |
+| | `06_figures_tables/manuscript_numbers.py` | Numbers quoted in the text | |
 
-Outputs go to `output/<stage>/` (not tracked by git).
+Stages 01–03 need the raw inputs (below); stage 04 onward needs only the stage-03 tables.
+
+### Commands
+
+```
+Rscript 01_study_area/01_fia_plot_agb.R
+Rscript 01_study_area/02_hexagon_province_pieces.R
+Rscript 01_study_area/03_tribal_land_pieces.R
+Rscript 01_study_area/04_select_hexagons.R
+Rscript 02_reference/01_fia_canopy_intervals.R
+Rscript 02_reference/02_products_and_reference.R
+Rscript 02_reference/03_forest_area_reference.R
+Rscript 03_predictors/01_terrain.R
+Rscript 03_predictors/02_raster_predictors.R
+Rscript 03_predictors/03_treemap_stand_age.R
+Rscript 03_predictors/04_analysis_tables.R
+python 04_models/01_bias_model.py
+python 04_models/02_regional_correction.py
+python 04_models/03_global_correction.py
+
+# sensitivity: layers not imputed from FIA (Table S1)
+python 04_models/01_bias_model.py output/03_predictors/analysis_main_nonfia.csv nonfia
+python 04_models/02_regional_correction.py output/03_predictors/analysis_main_nonfia.csv nonfia nonfia
+
+# sensitivity: inventory period (FIA 2019-2023, CCI 2021)
+Rscript 02_reference/01_fia_canopy_intervals.R 2019 2023
+Rscript 02_reference/02_products_and_reference.R 2019 2023 2021
+Rscript 03_predictors/04_analysis_tables.R 2019_2023_cci2021 2019_2023_cci2021 period
+Rscript 03_predictors/04_analysis_tables.R 2018_2022_cci2020 2019_2023_cci2021 splitA
+Rscript 03_predictors/04_analysis_tables.R 2019_2023_cci2021 2018_2022_cci2020 splitB
+python 04_models/01_bias_model.py output/03_predictors/analysis_period_main.csv period
+python 04_models/01_bias_model.py output/03_predictors/analysis_splitA_main.csv splitA
+python 04_models/01_bias_model.py output/03_predictors/analysis_splitB_main.csv splitB
+
+Rscript 05_sensitivity/01_forest_loss.R
+python 05_sensitivity/02_scale.py
+python 05_sensitivity/03_period_summary.py
+
+Rscript 06_figures_tables/fig1_study_area.R
+Rscript 06_figures_tables/fig2_accuracy_and_bias.R
+Rscript 06_figures_tables/fig3_shap_and_response.R
+Rscript 06_figures_tables/fig4_dominant_factor.R
+Rscript 06_figures_tables/figS1_tribal_land_accuracy.R
+python 06_figures_tables/figS3_response_curves.py
+python 06_figures_tables/fig5_correction_performance.py
+python 06_figures_tables/table_S1.py
+python 06_figures_tables/manuscript_numbers.py
+```
 
 ## Configuration
 
-`config.yml` lists every raw input and every analysis setting (selection thresholds, years, random seed 42).
-Set `input_dir` to the folder that holds the raw data. Paths in `inputs:` are relative to it.
+`config.yml` lists every raw input and every analysis setting (selection thresholds, years, region boxes,
+random seed 42). Set `input_dir` to the folder that holds the raw data. Paths in `inputs:` are relative to it.
+Python scripts read the same file (`py/common.py`), which also fixes the predictor order and the XGBoost search
+space.
+
+## Reproducibility notes
+
+- **Checked against the paper.** Every stage was run from the raw inputs and compared with the published
+  results. Stages 01–03 reproduce the published analysis tables (study area, reference and satellite AGB, study
+  regions, nine of the ten predictors) to floating-point precision. On those tables, stages 04–06 reproduce the
+  published bias, regional and global models (CV scores, SHAP values, out-of-fold predictions), the inventory-period
+  runs, Tables S1–S2, the values behind Figs. 5 and S5, and the figures.
+- **Soil moisture.** The SMAP 2021 mean raster used in the paper was not kept. The file named in `config.yml`
+  (`smap_sm_2021`) was built from the same product and agrees closely with the published hexagon values
+  (r = 0.995, largest difference 0.04 m³ m⁻³), but not exactly. A full rerun from this raster therefore moves a
+  few published numbers slightly (for example, the CCI bias model's elevation importance is 4.9 instead of
+  5.2 Mg ha⁻¹, and the NM+SECP CCI regional model's CV R² is −0.23 instead of −0.26). To use hexagon values
+  instead of the raster, set `settings: soil_moisture_table` to a CSV with columns `FID` and `soil_moisture`;
+  with the published hexagon values, the rerun reproduces every published number.
+- **Terrain.** Slope and aspect are computed tile by tile (1° ASTER GDEM tiles). A hexagon that crosses a tile
+  edge takes the plain mean of the means of its parts in each tile.
+- **Which part of the hexagon.** Forest age (TreeMap) and the GLAD canopy height use the part of the hexagon
+  inside the tribal land; all other predictors use the whole hexagon.
+- **TreeMap stand age.** Age in 2020 = FIADB `STDAGE` + (2020 − `MEASYEAR`). Plots whose result is negative
+  are set to 0.
+- **Large numbers in `config.yml`.** Write them as plain digits. The YAML readers used here read `1.0e8` as
+  text, not as a number.
 
 ## Data sources
 
@@ -47,13 +132,26 @@ All inputs are public. They are not included in this repository because of their
 | Tribal lands | U.S. Census Bureau, 2024 TIGER/Line Shapefiles, American Indian/Alaska Native/Native Hawaiian Areas |
 | Ecological provinces | USDA Forest Service ECOMAP (2007), ecological subregions of the United States |
 | NLCD Tree Canopy Cover, 2020 and 2021 (v2025-6) | USDA Forest Service / MRLC |
-
-*(The list will grow with the remaining stages.)*
+| GEDI L4B gridded AGB v2.1 (1 km) | ORNL DAAC |
+| ESA CCI Biomass v6.0, 2020 and 2021 (100 m) | ESA Climate Change Initiative, CEDA archive |
+| TreeMap 2020 (plot imputation raster, stand height, stand density index) | USDA Forest Service Research Data Archive |
+| ASTER GDEM v3 | NASA LP DAAC |
+| GEDI L4C gridded WSCI (1 km) | ORNL DAAC |
+| Community wood density map | Mo et al. (2024) |
+| gNATSGO available water capacity | USDA NRCS |
+| SMAP enhanced L3 soil moisture (SPL3SMP_E), 2021 annual mean | NASA NSIDC DAAC |
+| Forest stand age 2011 (sensitivity) | Pan et al. (2011), USDA Forest Service Research Data Archive |
+| GLAD forest canopy height 2019 (sensitivity) | Potapov et al. (2021) |
+| GAMI forest age v2.1 (sensitivity) | Besnard et al. (2024), GFZ Data Services |
+| Tree density (sensitivity) | Crowther et al. (2015) |
+| Global Forest Change v1.12 (forest loss) | Hansen et al. (2013) |
 
 ## Software
 
-R 4.5.2: terra 1.9.46, sf 1.0.21, data.table 1.17.8, rFIA 1.1.2, yaml 2.3.10, DBI, RSQLite 2.4.3.
-Python 3.11 (later stages): see `environment.yml`.
+R 4.5.2: terra 1.9.46, sf 1.0.21, exactextractr 0.10.0, data.table 1.17.8, rFIA 1.1.2, yaml 2.3.10, DBI,
+RSQLite 2.4.3, future.apply 1.20.0, ggplot2 4.0.0, patchwork 1.3.2, dplyr 1.1.4, rnaturalearth 1.1.0.
+Python 3.11: numpy 2.3.3, pandas 2.3.3, scipy 1.16.2, scikit-learn 1.7.2, xgboost 3.1.3, shap 0.51.0,
+matplotlib 3.10.7, pyyaml 6.0.3.
 
 ## License
 
