@@ -1,12 +1,12 @@
-"""Appendix Table S1 - TreeMap 2020 layers (imputed from FIA plots) vs layers not imputed from FIA
+"""Appendix Table S2 - TreeMap 2020 layers (imputed from FIA plots) vs layers not imputed from FIA
 (canopy height GLAD 2019, forest age GAMI 2020, tree density Crowther et al. 2015)
 
  (a) bias model: CV R^2 (CV RMSE)       (b) five most important predictors (mean |SHAP|)
  (c) regional correction models: CV R^2 (CV RMSE) [predictors used]; mean CV R^2 of the six models
 
-Usage : python 06_figures_tables/table_S1.py
+Usage : python 06_figures_tables/table_S2.py
 Inputs: output/04_models/{bias,regional}_{main,nonfia}/
-Output: output/06_figures_tables/table_S1.csv
+Output: output/06_figures_tables/table_S2.csv
 """
 import csv
 import os
@@ -58,7 +58,7 @@ for g, lab in zip(REGIONS, ["SGP", "SW+PNW", "NM+SECP"]):
         rows.append([f"{lab}, {p}" + (f" (n = {n})" if i == 0 else ""), *(regcell(r, f"{g}_{p}") for r in RUNS)])
 rows.append(["Mean of the six models", *(f2(reg[r].cv_r2.mean()) for r in RUNS)])
 
-with open(out("06_figures_tables", "table_S1.csv"), "w", encoding="utf-8-sig", newline="") as f:
+with open(out("06_figures_tables", "table_S2.csv"), "w", encoding="utf-8-sig", newline="") as f:
     csv.writer(f).writerows(rows)
 for r in rows:
     print(" | ".join(r))

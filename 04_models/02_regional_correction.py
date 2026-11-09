@@ -1,4 +1,4 @@
-"""04/02 - Regional correction models (Sections 2.5.2.1, 3.4; Fig. 5, S5; Table S1)
+"""04/02 - Regional correction models (Sections 2.5.2.1, 3.4; Fig. 5, S5; Table S2)
 
 One XGBoost model per merged region (SGP, SW = SW + PNW, NM = NM + SECP) and product predicts the reference
 AGB from the satellite AGB plus the two predictors with the largest mean |SHAP| in that region in the bias model

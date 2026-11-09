@@ -43,7 +43,7 @@ inputs:
   smap_sm_2021: "../input_ok/SMAP_SM_2021mean.tif"
   # Pan et al. (2015) forest stand age map, 2011, 250 m (sensitivity: forest age not from TreeMap)
   pan_forest_age_2011: "stand_structure/forest_age_usda/conus_age11_250m.img"
-  # layers not built from FIA plots (sensitivity, Table S1)
+  # layers not built from FIA plots (sensitivity, Table S2)
   glad_canopy_height_2019: "stand_structure/forest_height_2019/Forest_height_2019_NAM.tif"
   gami_forest_age: "stand_structure/forest_age_global/Forest_age.nc"
   crowther_tree_density: "stand_structure/tree_density_Crowther2015/Crowther_Nature_Files_Revision_01_WGS84_GeoTiff/Crowther_Nature_Biome_Revision_01_WGS84_GeoTiff.tif"

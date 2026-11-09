@@ -8,7 +8,7 @@
 #   AWC                    gNATSGO available water capacity (mm/m)
 #   Soil moisture          SMAP 2021 mean soil moisture (m³/m³)
 #   Pan forest age (+ SD)  Pan et al. (2015) 2011 stand age, used only in the forest-age comparison
-# Layers not built from FIA plots (sensitivity analysis, Table S1):
+# Layers not built from FIA plots (sensitivity analysis, Table S2):
 #   GLAD canopy height 2019  mean over tree pixels (5-60 m) of the hexagon part inside tribal lands
 #   GAMI forest age 2020     mean over the 20 ensemble members of each member's mean over forest pixels
 #   Crowther tree density    mean over the hexagon

@@ -10,7 +10,7 @@
 #   main    forest age = TreeMap 2020
 #   pan     forest age = Pan et al. (2015), 2011 map              (forest-age comparison)
 #   nonfia  canopy height = GLAD 2019, forest age = GAMI 2020,
-#           stand density = Crowther et al. (2015)               (layers not built from FIA plots, Table S1)
+#           stand density = Crowther et al. (2015)               (layers not built from FIA plots, Table S2)
 #
 # Usage : Rscript 03_predictors/04_analysis_tables.R [sat_run ref_run tag]
 #   sat_run / ref_run: stage-02 runs ("<first>_<last>_cci<year>") that give the satellite values and the

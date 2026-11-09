@@ -1,4 +1,4 @@
-"""05/02 - Scale sensitivity of the product accuracy (Appendix Table S2)
+"""05/02 - Scale sensitivity of the product accuracy (Appendix Table S1)
 
 Accuracy of the satellite AGB against the reference at three aggregation levels:
   hexagon        the 257 hexagons;
@@ -10,7 +10,7 @@ at hexagon and tribal-land level. Also prints the FIA sampling error of the plot
 
 Usage : python 05_sensitivity/02_scale.py
 Inputs: output/03_predictors/analysis_main_main.csv, regions.csv; output/02_reference/reference_plots_2018_2022.csv
-Output: output/05_sensitivity/table_S2.csv
+Output: output/05_sensitivity/table_S1.csv
 """
 import csv
 import os
@@ -64,7 +64,7 @@ rows = [["Aggregation level", "n", "CCI: bias / RMSE / r²", "GEDI: bias / RMSE 
 for g, lab in [("SGP", "SGP"), ("SW", "SW+PNW"), ("NM", "NM+SECP")]:
     c, gd = res["CCI"][g], res["GEDI"][g]
     rows.append([lab, f"{c[0]} / {c[2]}", f"{sg(c[1])} / {sg(c[3])}", f"{sg(gd[1])} / {sg(gd[3])}"])
-with open(out("05_sensitivity", "table_S2.csv"), "w", encoding="utf-8-sig", newline="") as f:
+with open(out("05_sensitivity", "table_S1.csv"), "w", encoding="utf-8-sig", newline="") as f:
     csv.writer(f).writerows(rows)
 for r in rows:
     print(" | ".join(str(x) for x in r))

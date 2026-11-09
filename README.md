@@ -34,7 +34,7 @@ Python scripts: `python <folder>/<script>.py`. Outputs go to `output/<stage>/` (
 | | `04_models/02_regional_correction.py` | Regional correction models | 2.5.2, 3.4 |
 | | `04_models/03_global_correction.py` | Global correction model | 2.5.2, 3.4 |
 | 05 sensitivity | `05_sensitivity/01_forest_loss.R` | Forest loss 2019–2023 per hexagon | 2.3 |
-| | `05_sensitivity/02_scale.py` | Accuracy at hexagon, tribal-land and well-sampled level | Table S2 |
+| | `05_sensitivity/02_scale.py` | Accuracy at hexagon, tribal-land and well-sampled level | Table S1 |
 | | `05_sensitivity/03_period_summary.py` | FIA 2019–2023 / CCI 2021 runs compared with the main run | 2.3, 3.2 |
 | 06 figures, tables | `06_figures_tables/fig1_study_area.R` | Fig. 1 | |
 | | `06_figures_tables/fig2_accuracy_and_bias.R` | Fig. 2, Fig. S2 | |
@@ -43,7 +43,7 @@ Python scripts: `python <folder>/<script>.py`. Outputs go to `output/<stage>/` (
 | | `06_figures_tables/fig4_dominant_factor.R` | Fig. 4, Fig. S4 | |
 | | `06_figures_tables/fig5_correction_performance.py` | Fig. 5, Fig. S5 | |
 | | `06_figures_tables/figS1_tribal_land_accuracy.R` | Fig. S1 | |
-| | `06_figures_tables/table_S1.py` | Table S1 | |
+| | `06_figures_tables/table_S2.py` | Table S2 | |
 | | `06_figures_tables/manuscript_numbers.py` | Numbers quoted in the text | |
 
 Stages 01–03 need the raw inputs (below); stage 04 onward needs only the stage-03 tables.
@@ -66,7 +66,7 @@ python 04_models/01_bias_model.py
 python 04_models/02_regional_correction.py
 python 04_models/03_global_correction.py
 
-# sensitivity: layers not imputed from FIA (Table S1)
+# sensitivity: layers not imputed from FIA (Table S2)
 python 04_models/01_bias_model.py output/03_predictors/analysis_main_nonfia.csv nonfia
 python 04_models/02_regional_correction.py output/03_predictors/analysis_main_nonfia.csv nonfia nonfia
 
@@ -91,7 +91,7 @@ Rscript 06_figures_tables/fig4_dominant_factor.R
 Rscript 06_figures_tables/figS1_tribal_land_accuracy.R
 python 06_figures_tables/figS3_response_curves.py
 python 06_figures_tables/fig5_correction_performance.py
-python 06_figures_tables/table_S1.py
+python 06_figures_tables/table_S2.py
 python 06_figures_tables/manuscript_numbers.py
 ```
 
