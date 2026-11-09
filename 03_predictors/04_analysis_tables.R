@@ -8,7 +8,7 @@
 #   x, y = hexagon centroid (lon/lat).
 # Three predictor sets (same rows):
 #   main    forest age = TreeMap 2020
-#   pan     forest age = Pan et al. (2011)                       (forest-age comparison)
+#   pan     forest age = Pan et al. (2015), 2011 map              (forest-age comparison)
 #   nonfia  canopy height = GLAD 2019, forest age = GAMI 2020,
 #           stand density = Crowther et al. (2015)               (layers not built from FIA plots, Table S1)
 #

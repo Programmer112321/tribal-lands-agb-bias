@@ -165,7 +165,7 @@ All inputs are public. They are not included in this repository because of their
 | Community wood density map | Mo et al. (2024) |
 | gNATSGO available water capacity | USDA NRCS |
 | SMAP enhanced L3 soil moisture (SPL3SMP_E v6, daily 2021; see "Building the soil-moisture input") | NASA NSIDC DAAC |
-| Forest stand age 2011 (sensitivity) | Pan et al. (2011), USDA Forest Service Research Data Archive |
+| Forest stand age 2011 (sensitivity) | Pan et al. (2015), USDA Forest Service Research Data Archive (RDS-2015-0043) |
 | GLAD forest canopy height 2019 (sensitivity) | Potapov et al. (2021) |
 | GAMI forest age v2.1 (sensitivity) | Besnard et al. (2024), GFZ Data Services |
 | Tree density (sensitivity) | Crowther et al. (2015) |

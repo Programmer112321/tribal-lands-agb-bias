@@ -41,7 +41,7 @@ inputs:
   # SMAP enhanced L3 soil moisture (SPL3SMP_E v6), 2021 annual mean, CONUS lon/lat grid. Built from the daily
   # files, not downloaded as is: see README, "Building the soil-moisture input"
   smap_sm_2021: "../input_ok/SMAP_SM_2021mean.tif"
-  # Pan et al. (2011) forest stand age, 2011, 250 m (sensitivity: forest age not from TreeMap)
+  # Pan et al. (2015) forest stand age map, 2011, 250 m (sensitivity: forest age not from TreeMap)
   pan_forest_age_2011: "stand_structure/forest_age_usda/conus_age11_250m.img"
   # layers not built from FIA plots (sensitivity, Table S1)
   glad_canopy_height_2019: "stand_structure/forest_height_2019/Forest_height_2019_NAM.tif"
