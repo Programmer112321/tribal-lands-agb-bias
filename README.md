@@ -176,4 +176,4 @@ matplotlib 3.10.7, pyyaml 6.0.3.
 
 ## License
 
-To be decided.
+MIT (see `LICENSE`).
