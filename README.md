@@ -8,7 +8,7 @@ v6.0 (2020, 100 m), with a reference AGB built from USDA Forest Service Forest I
 plots in 257 FIA hexagons on 20 Tribal lands in the conterminous United States. It then explains the bias with
 ten forest and site factors (XGBoost + SHAP) and tests bias-correction models.
 
-- Archived code (release v1.0.0): https://doi.org/10.5281/zenodo.24065857
+- Archived code: https://doi.org/10.5281/zenodo.24065856 (all releases; the revised manuscript cites version 1.0.1)
 - Reference AGB for all FIA hexagons of the conterminous United States (computed with the stage-02 scripts):
   https://doi.org/10.5281/zenodo.24063901
 
